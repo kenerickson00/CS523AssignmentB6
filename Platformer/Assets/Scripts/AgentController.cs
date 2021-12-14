@@ -9,13 +9,15 @@ public class AgentController : MonoBehaviour
 
     Rigidbody rb;
     Transform agentBody; //visual model of agent
+    Animator animator;
 
     private bool jumping;
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
         agentBody = transform.GetChild(0);
+        rb = agentBody.gameObject.GetComponent<Rigidbody>();
+        animator = agentBody.gameObject.GetComponent<Animator>();
 
         jumping = false;
     }
@@ -41,6 +43,7 @@ public class AgentController : MonoBehaviour
             {
                 agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 0, agentBody.eulerAngles.z);
             }
+            animator.SetBool("moving", true);
         } else if(vdir < 0) //backwards
         {
             if (hdir > 0) //SE
@@ -55,22 +58,30 @@ public class AgentController : MonoBehaviour
             {
                 agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 180, agentBody.eulerAngles.z);
             }
+            animator.SetBool("moving", true);
         } else // vdir == 0
         {
             if (hdir > 0) //E
             {
                 agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 90, agentBody.eulerAngles.z);
+                animator.SetBool("moving", true);
             }
             else if (hdir < 0) //W
             {
                 agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -90, agentBody.eulerAngles.z);
-            } //else not moving, dont need to turn
+                animator.SetBool("moving", true);
+            }
+            else
+            { //else not moving, dont need to turn
+                animator.SetBool("moving", false);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && !jumping)
         {
             rb.AddForce(new Vector3(0, jumpForce, 0));
             jumping = true;
+            animator.SetBool("jumpUp", true);
         }
         /* Some brief thoughts about how movement should work
          * For non jumping movement, ie moving forward, backwards, and sideways, we should do it using transforms
@@ -88,13 +99,15 @@ public class AgentController : MonoBehaviour
          */
     }
 
-    void OnCollisionEnter(Collision collision)
+    /*void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("collision");
         if(collision.gameObject.tag == "Platform")
         {
             if(jumping)
             {
                 jumping = false;
+                //animator.SetBool("jumpUp", false);
             }
         }
     }
@@ -103,10 +116,29 @@ public class AgentController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Platform")
         {
-            if (!jumping)
+            if (!jumping) //if we fell off a platform but didn't jump, make sure we can't jump midair
             {
                 jumping = true;
             }
         }
+    }*/
+
+    public void setJumpUp(bool b)
+    {
+        if (b)
+        {
+            jumping = true;
+            animator.SetBool("jumpUp", true);
+        }
+        else
+        {
+            jumping = false;
+            animator.SetBool("jumpUp", false);
+        }
+    }
+
+    public bool checkJumping()
+    {
+        return jumping;
     }
 }
