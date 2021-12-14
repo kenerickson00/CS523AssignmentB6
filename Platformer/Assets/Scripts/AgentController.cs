@@ -28,6 +28,45 @@ public class AgentController : MonoBehaviour
 
         transform.position += speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
 
+        //handle rotation. Should probably do these turns with animations and not just abrupt turns, but this is more or less how we want it to work
+        if(vdir > 0) //forwards
+        {
+            if(hdir > 0) //NE
+            {
+                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 45, agentBody.eulerAngles.z);
+            } else if(hdir < 0) //NW
+            {
+                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -45, agentBody.eulerAngles.z);
+            } else //hdir == 0 N
+            {
+                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 0, agentBody.eulerAngles.z);
+            }
+        } else if(vdir < 0) //backwards
+        {
+            if (hdir > 0) //SE
+            {
+                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 135, agentBody.eulerAngles.z);
+            }
+            else if (hdir < 0) //SW
+            {
+                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -135, agentBody.eulerAngles.z);
+            }
+            else //hdir == 0 S
+            {
+                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 180, agentBody.eulerAngles.z);
+            }
+        } else // vdir == 0
+        {
+            if (hdir > 0) //E
+            {
+                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 90, agentBody.eulerAngles.z);
+            }
+            else if (hdir < 0) //W
+            {
+                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -90, agentBody.eulerAngles.z);
+            } //else not moving, dont need to turn
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) && !jumping)
         {
             rb.AddForce(new Vector3(0, jumpForce, 0));
@@ -47,5 +86,27 @@ public class AgentController : MonoBehaviour
          *  which should make things a lot easier. We just need to have a state system to make sure that you can't 
          *  jump too many times in a row
          */
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Platform")
+        {
+            if(jumping)
+            {
+                jumping = false;
+            }
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Platform")
+        {
+            if (!jumping)
+            {
+                jumping = true;
+            }
+        }
     }
 }
