@@ -6,12 +6,14 @@ public class AgentController : MonoBehaviour
 {
     public float speed;
     public float jumpForce;
+    public float mudPenalty;
 
     Rigidbody rb;
     Transform agentBody; //visual model of agent
     Animator animator;
 
     private bool jumping;
+    private bool onMud;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +22,7 @@ public class AgentController : MonoBehaviour
         animator = agentBody.gameObject.GetComponent<Animator>();
 
         jumping = false;
+        onMud = false;
     }
 
     // Update is called once per frame
@@ -28,7 +31,14 @@ public class AgentController : MonoBehaviour
         float hdir = Input.GetAxis("Horizontal");
         float vdir = Input.GetAxis("Vertical");
 
-        transform.position += speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
+        if (onMud)
+        {
+            transform.position += mudPenalty * speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
+        }
+        else
+        {
+            transform.position += speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
+        }
 
         //handle rotation. Should probably do these turns with animations and not just abrupt turns, but this is more or less how we want it to work
         if(vdir > 0) //forwards
@@ -137,8 +147,18 @@ public class AgentController : MonoBehaviour
         }
     }
 
+    public void setFalling()
+    {
+        jumping = true;
+    }
+
     public bool checkJumping()
     {
         return jumping;
+    }
+
+    public void setMud(bool b)
+    {
+        onMud = b;
     }
 }
