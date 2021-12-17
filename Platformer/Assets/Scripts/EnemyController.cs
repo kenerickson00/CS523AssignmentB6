@@ -136,6 +136,7 @@ public class EnemyController : MonoBehaviour
                             curTime = 0.0f;
                             //play waiting/turning animation
                             animator.SetFloat("speed", 0.0f);
+                            animator.SetBool("Turn", true);
                         } else
                         {
                             animator.SetFloat("speed", speed);
@@ -151,6 +152,7 @@ public class EnemyController : MonoBehaviour
                             curTime = 0.0f;
                             //play waiting/turning animation
                             animator.SetFloat("speed", 0.0f);
+                            animator.SetBool("Turn", true);
                         } else
                         {
                             animator.SetFloat("speed", speed);
@@ -159,6 +161,7 @@ public class EnemyController : MonoBehaviour
                 }
                 else if (state == 1)
                 {
+                    animator.SetBool("Turn", true);
                     curTime += Time.deltaTime;
                     if (curTime >= waitTime)
                     {
@@ -172,6 +175,7 @@ public class EnemyController : MonoBehaviour
                         {
                             nm.SetDestination(origin);
                         }
+                        animator.SetBool("Turn", false);
                         animator.SetFloat("speed", speed);
                         nm.isStopped = false;
                     }

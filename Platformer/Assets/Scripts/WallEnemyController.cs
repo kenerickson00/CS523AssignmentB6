@@ -134,6 +134,7 @@ public class WallEnemyController : MonoBehaviour
                         state = 1;
                         curTime = 0.0f;
                         animator.SetFloat("speed", 0.0f);
+                        animator.SetBool("Turn", true);
                     } else
                     {
                         animator.SetFloat("speed", speed);
@@ -148,6 +149,7 @@ public class WallEnemyController : MonoBehaviour
                         state = 0;
                         nm.SetDestination(wpoints[index]);
                         nm.isStopped = false;
+                        animator.SetBool("Turn", false);
                         animator.SetFloat("speed", speed);
                     }
                 }
