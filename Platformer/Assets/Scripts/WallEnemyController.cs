@@ -12,6 +12,7 @@ public class WallEnemyController : MonoBehaviour
 
     UnityEngine.AI.NavMeshAgent nm;
     float tolerance = 0.1f;
+    Animator animator;
 
     private int state; //0 wall following, 1 waiting, 2 detected the agent
     private int index;
@@ -22,6 +23,7 @@ public class WallEnemyController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        animator = GetComponent<Animator>();
         nm = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         index = 1; //already at index 0
@@ -54,10 +56,11 @@ public class WallEnemyController : MonoBehaviour
                 {
                     state = 0;
                     nm.SetDestination(wpoints[index]);
+                    nm.speed = speed;
                     curTime = 0.0f;
+                    animator.SetFloat("speed", speed);
                 }
             }
-            last = transform.position;
         }
         else
         {
@@ -68,7 +71,10 @@ public class WallEnemyController : MonoBehaviour
             Vector3 middle = transform.position + new Vector3(0, 0.5f, 0);
             if (Physics.Raycast(middle, transform.TransformDirection(Vector3.forward), out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
             Vector3 or = Quaternion.Euler(0, 45, 0) * transform.TransformDirection(Vector3.forward);
             Vector3 ol = Quaternion.Euler(0, -22.5f, 0) * transform.TransformDirection(Vector3.forward);
@@ -76,19 +82,31 @@ public class WallEnemyController : MonoBehaviour
             Vector3 il = Quaternion.Euler(0, -45, 0) * transform.TransformDirection(Vector3.forward);
             if (Physics.Raycast(middle, or, out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
             if (Physics.Raycast(middle, ol, out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
             if (Physics.Raycast(middle, ir, out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
             if (Physics.Raycast(middle, il, out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
 
             if (rayhit)
@@ -96,7 +114,9 @@ public class WallEnemyController : MonoBehaviour
                 state = 2;
                 curTime = 0.0f;
                 nm.SetDestination(agent.transform.position);
+                nm.speed = speed + 1.5f;
                 nm.isStopped = false;
+                animator.SetFloat("speed", 20.0f);
             }
             else
             {
@@ -113,6 +133,10 @@ public class WallEnemyController : MonoBehaviour
                         }
                         state = 1;
                         curTime = 0.0f;
+                        animator.SetFloat("speed", 0.0f);
+                    } else
+                    {
+                        animator.SetFloat("speed", speed);
                     }
                 }
                 else if (state == 1)
@@ -124,10 +148,14 @@ public class WallEnemyController : MonoBehaviour
                         state = 0;
                         nm.SetDestination(wpoints[index]);
                         nm.isStopped = false;
+                        animator.SetFloat("speed", speed);
                     }
                 }
             }
         }
+        /*float curspeed = (transform.position - last).magnitude / Time.deltaTime;
+        animator.SetFloat("speed", curspeed);*/
+        last = transform.position;
     }
 
     void OnTriggerEnter(Collider other)
@@ -137,7 +165,9 @@ public class WallEnemyController : MonoBehaviour
             state = 2;
             curTime = 0.0f;
             nm.SetDestination(agent.transform.position);
+            nm.speed = speed + 1.5f;
             nm.isStopped = false;
+            animator.SetFloat("speed", 20.0f);
         }
     }
 

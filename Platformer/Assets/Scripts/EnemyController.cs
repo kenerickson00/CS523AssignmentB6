@@ -12,6 +12,7 @@ public class EnemyController : MonoBehaviour
 
     UnityEngine.AI.NavMeshAgent nm;
     float tolerance = 0.1f;
+    Animator animator;
 
     private int state; //0 walking, 1 waiting, 2 detected the agent
     private Vector3 origin;
@@ -23,6 +24,7 @@ public class EnemyController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        animator = GetComponent<Animator>();
         nm = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         dir = true; //foward
@@ -51,10 +53,16 @@ public class EnemyController : MonoBehaviour
                 {
                     state = 0;
                     nm.SetDestination(destination);
+                    animator.SetFloat("speed", speed);
+                    nm.speed = speed;
                     dir = true;
                     curTime = 0.0f;
                 }
-            }
+            } /*else
+            {
+                float curspeed = (transform.position - last).magnitude / Time.deltaTime;
+                animator.SetFloat("speed", curspeed);
+            }*/
             last = transform.position;
         }
         else
@@ -64,36 +72,53 @@ public class EnemyController : MonoBehaviour
             RaycastHit hit;
             float raydist = 6.0f; //arbitrary, may need to tweak this value
             Vector3 middle = transform.position + new Vector3(0, 0.5f, 0);
-            if (Physics.Raycast(middle, transform.TransformDirection(Vector3.forward), out hit, raydist)) 
+            if (Physics.Raycast(middle, transform.TransformDirection(Vector3.forward), out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
             Vector3 or = Quaternion.Euler(0, 45, 0) * transform.TransformDirection(Vector3.forward);
             Vector3 ol = Quaternion.Euler(0, -22.5f, 0) * transform.TransformDirection(Vector3.forward);
             Vector3 ir = Quaternion.Euler(0, 22.5f, 0) * transform.TransformDirection(Vector3.forward);
             Vector3 il = Quaternion.Euler(0, -45, 0) * transform.TransformDirection(Vector3.forward);
-            if (Physics.Raycast(middle, or, out hit, raydist)) 
+            if (Physics.Raycast(middle, or, out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
-            if (Physics.Raycast(middle, ol, out hit, raydist)) 
+            if (Physics.Raycast(middle, ol, out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
-            if (Physics.Raycast(middle, ir, out hit, raydist)) 
+            if (Physics.Raycast(middle, ir, out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
-            if (Physics.Raycast(middle, il, out hit, raydist)) 
+            if (Physics.Raycast(middle, il, out hit, raydist))
             {
-                rayhit = true;
+                if (hit.collider.gameObject == agent)
+                {
+                    rayhit = true;
+                }
             }
 
             if (rayhit)
             {
                 state = 2;
                 curTime = 0.0f;
+                nm.speed = speed + 1.5f;
                 nm.SetDestination(agent.transform.position);
+                animator.SetFloat("speed", 20.0f);
                 nm.isStopped = false;
             }
             else
@@ -110,6 +135,10 @@ public class EnemyController : MonoBehaviour
                             state = 1;
                             curTime = 0.0f;
                             //play waiting/turning animation
+                            animator.SetFloat("speed", 0.0f);
+                        } else
+                        {
+                            animator.SetFloat("speed", speed);
                         }
                     }
                     else
@@ -121,6 +150,10 @@ public class EnemyController : MonoBehaviour
                             state = 1;
                             curTime = 0.0f;
                             //play waiting/turning animation
+                            animator.SetFloat("speed", 0.0f);
+                        } else
+                        {
+                            animator.SetFloat("speed", speed);
                         }
                     }
                 }
@@ -139,6 +172,7 @@ public class EnemyController : MonoBehaviour
                         {
                             nm.SetDestination(origin);
                         }
+                        animator.SetFloat("speed", speed);
                         nm.isStopped = false;
                     }
                 }
@@ -152,7 +186,9 @@ public class EnemyController : MonoBehaviour
         {
             state = 2;
             curTime = 0.0f;
+            nm.speed = speed + 1.5f;
             nm.SetDestination(agent.transform.position);
+            animator.SetFloat("speed", 20.0f);
             nm.isStopped = false;
         }
     }
