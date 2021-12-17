@@ -14,6 +14,7 @@ public class AgentController : MonoBehaviour
 
     private bool jumping;
     private bool onMud;
+    private bool gameover;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,90 +24,98 @@ public class AgentController : MonoBehaviour
 
         jumping = false;
         onMud = false;
+        gameover = false;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        float hdir = Input.GetAxis("Horizontal");
-        float vdir = Input.GetAxis("Vertical");
+        if (!gameover)
+        {
+            float hdir = Input.GetAxis("Horizontal");
+            float vdir = Input.GetAxis("Vertical");
 
-        if (onMud)
-        {
-            transform.position += mudPenalty * speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
-        }
-        else
-        {
-            transform.position += speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
-        }
-
-        //handle rotation. Should probably do these turns with animations and not just abrupt turns, but this is more or less how we want it to work
-        if(vdir > 0) //forwards
-        {
-            if(hdir > 0) //NE
+            if (onMud)
             {
-                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 45, agentBody.eulerAngles.z);
-            } else if(hdir < 0) //NW
-            {
-                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -45, agentBody.eulerAngles.z);
-            } else //hdir == 0 N
-            {
-                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 0, agentBody.eulerAngles.z);
-            }
-            animator.SetBool("moving", true);
-        } else if(vdir < 0) //backwards
-        {
-            if (hdir > 0) //SE
-            {
-                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 135, agentBody.eulerAngles.z);
-            }
-            else if (hdir < 0) //SW
-            {
-                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -135, agentBody.eulerAngles.z);
-            }
-            else //hdir == 0 S
-            {
-                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 180, agentBody.eulerAngles.z);
-            }
-            animator.SetBool("moving", true);
-        } else // vdir == 0
-        {
-            if (hdir > 0) //E
-            {
-                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 90, agentBody.eulerAngles.z);
-                animator.SetBool("moving", true);
-            }
-            else if (hdir < 0) //W
-            {
-                agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -90, agentBody.eulerAngles.z);
-                animator.SetBool("moving", true);
+                transform.position += mudPenalty * speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
             }
             else
-            { //else not moving, dont need to turn
-                animator.SetBool("moving", false);
+            {
+                transform.position += speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.Space) && !jumping)
-        {
-            rb.AddForce(new Vector3(0, jumpForce, 0));
-            jumping = true;
-            animator.SetBool("jumpUp", true);
+            //handle rotation. Should probably do these turns with animations and not just abrupt turns, but this is more or less how we want it to work
+            if (vdir > 0) //forwards
+            {
+                if (hdir > 0) //NE
+                {
+                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 45, agentBody.eulerAngles.z);
+                }
+                else if (hdir < 0) //NW
+                {
+                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -45, agentBody.eulerAngles.z);
+                }
+                else //hdir == 0 N
+                {
+                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 0, agentBody.eulerAngles.z);
+                }
+                animator.SetBool("moving", true);
+            }
+            else if (vdir < 0) //backwards
+            {
+                if (hdir > 0) //SE
+                {
+                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 135, agentBody.eulerAngles.z);
+                }
+                else if (hdir < 0) //SW
+                {
+                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -135, agentBody.eulerAngles.z);
+                }
+                else //hdir == 0 S
+                {
+                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 180, agentBody.eulerAngles.z);
+                }
+                animator.SetBool("moving", true);
+            }
+            else // vdir == 0
+            {
+                if (hdir > 0) //E
+                {
+                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 90, agentBody.eulerAngles.z);
+                    animator.SetBool("moving", true);
+                }
+                else if (hdir < 0) //W
+                {
+                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -90, agentBody.eulerAngles.z);
+                    animator.SetBool("moving", true);
+                }
+                else
+                { //else not moving, dont need to turn
+                    animator.SetBool("moving", false);
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Space) && !jumping)
+            {
+                rb.AddForce(new Vector3(0, jumpForce, 0));
+                jumping = true;
+                animator.SetBool("jumpUp", true);
+            }
+            /* Some brief thoughts about how movement should work
+             * For non jumping movement, ie moving forward, backwards, and sideways, we should do it using transforms
+             *  because this will keep movement quick and responsive, we don't want to be waiting to accelerate for a long 
+             *  time when we're trying to run away. We could do a little acceleration, but we want to start at near max
+             *  speed
+             * To account for turning, we should turn the agent model (agentBody variable) but not the transform of the main
+             *  agent itself. In the last animation assignment the movement was pretty unsatisfying because we couldn't just
+             *  move diagonally normally, we had to turn to do that, but in normal 3rd person games you can just move 
+             *  diagonally without any trouble. To do this we can just have normal movement and turn the model to face the
+             *  direction of our movement.
+             * For vertical/jumping movement we should use rigidbody forces as this will do all of the gravity work for us
+             *  which should make things a lot easier. We just need to have a state system to make sure that you can't 
+             *  jump too many times in a row
+             */
         }
-        /* Some brief thoughts about how movement should work
-         * For non jumping movement, ie moving forward, backwards, and sideways, we should do it using transforms
-         *  because this will keep movement quick and responsive, we don't want to be waiting to accelerate for a long 
-         *  time when we're trying to run away. We could do a little acceleration, but we want to start at near max
-         *  speed
-         * To account for turning, we should turn the agent model (agentBody variable) but not the transform of the main
-         *  agent itself. In the last animation assignment the movement was pretty unsatisfying because we couldn't just
-         *  move diagonally normally, we had to turn to do that, but in normal 3rd person games you can just move 
-         *  diagonally without any trouble. To do this we can just have normal movement and turn the model to face the
-         *  direction of our movement.
-         * For vertical/jumping movement we should use rigidbody forces as this will do all of the gravity work for us
-         *  which should make things a lot easier. We just need to have a state system to make sure that you can't 
-         *  jump too many times in a row
-         */
     }
 
     /*void OnCollisionEnter(Collision collision)
@@ -160,5 +169,12 @@ public class AgentController : MonoBehaviour
     public void setMud(bool b)
     {
         onMud = b;
+    }
+
+    public void getHit()
+    {
+        rb.isKinematic = true;
+        gameover = true;
+        animator.SetBool("Defeat", true);
     }
 }

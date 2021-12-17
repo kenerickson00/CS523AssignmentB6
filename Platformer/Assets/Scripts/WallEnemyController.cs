@@ -116,6 +116,7 @@ public class WallEnemyController : MonoBehaviour
                 nm.SetDestination(agent.transform.position);
                 nm.speed = speed + 1.5f;
                 nm.isStopped = false;
+                animator.SetBool("Turn", false);
                 animator.SetFloat("speed", 20.0f);
             }
             else
@@ -169,6 +170,7 @@ public class WallEnemyController : MonoBehaviour
             nm.SetDestination(agent.transform.position);
             nm.speed = speed + 1.5f;
             nm.isStopped = false;
+            animator.SetBool("Turn", false);
             animator.SetFloat("speed", 20.0f);
         }
     }
@@ -177,7 +179,8 @@ public class WallEnemyController : MonoBehaviour
     {
         if (collision.gameObject == agent) //game over, the agent has been caught
         {
-            Destroy(agent); //should replace this with some death animation or something
+            //Destroy(agent); //should replace this with some death animation or something
+            agent.transform.parent.gameObject.GetComponent<AgentController>().getHit();
         }
         else if (collision.gameObject.tag == "Rocky") //enemy hazard
         {

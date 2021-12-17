@@ -118,6 +118,7 @@ public class EnemyController : MonoBehaviour
                 curTime = 0.0f;
                 nm.speed = speed + 1.5f;
                 nm.SetDestination(agent.transform.position);
+                animator.SetBool("Turn", false);
                 animator.SetFloat("speed", 20.0f);
                 nm.isStopped = false;
             }
@@ -192,6 +193,7 @@ public class EnemyController : MonoBehaviour
             curTime = 0.0f;
             nm.speed = speed + 1.5f;
             nm.SetDestination(agent.transform.position);
+            animator.SetBool("Turn", false);
             animator.SetFloat("speed", 20.0f);
             nm.isStopped = false;
         }
@@ -201,7 +203,8 @@ public class EnemyController : MonoBehaviour
     {
         if (collision.gameObject == agent) //game over, the agent has been caught
         {
-            Destroy(agent); //should replace this with some death animation or something
+            //Destroy(agent); //should replace this with some death animation or something
+            agent.transform.parent.gameObject.GetComponent<AgentController>().getHit();
         } else if(collision.gameObject.tag == "Rocky") //enemy hazard
         {
             nm.speed = speed - 1.5f;
