@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
-{ //basic agent that goes back and forth between two points
-    public Transform dest;
+public class WallEnemyController : MonoBehaviour
+{ //agent that travels around a wall, stopping to look when it reaches a corner waypoint
+    public Transform waypoints;
     public float waitTime;
     public float switchTime;
     public float speed;
@@ -13,27 +13,30 @@ public class EnemyController : MonoBehaviour
     UnityEngine.AI.NavMeshAgent nm;
     float tolerance = 0.1f;
 
-    private int state; //0 walking, 1 waiting, 2 detected the agent
-    private Vector3 origin;
-    private Vector3 destination;
-    private bool dir;
+    private int state; //0 wall following, 1 waiting, 2 detected the agent
+    private int index;
     private float curTime;
     private Vector3 last;
+    private List<Vector3> wpoints;
 
     // Start is called before the first frame update
     void Start()
     {
         nm = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
-        dir = true; //foward
-        origin = transform.position;
-        destination = dest.position;
+        index = 1; //already at index 0
         state = 0;
         curTime = 0.0f;
 
         nm.speed = speed;
-        nm.SetDestination(destination);
+        nm.SetDestination(waypoints.GetChild(index).position);
         last = transform.position;
+
+        wpoints = new List<Vector3>();
+        for(int i=0;i<waypoints.childCount;i++)
+        {
+            wpoints.Add(waypoints.GetChild(i).position);
+        }
     }
 
     // Update is called once per frame
@@ -50,8 +53,7 @@ public class EnemyController : MonoBehaviour
                 if (curTime >= switchTime)
                 {
                     state = 0;
-                    nm.SetDestination(destination);
-                    dir = true;
+                    nm.SetDestination(wpoints[index]);
                     curTime = 0.0f;
                 }
             }
@@ -62,9 +64,9 @@ public class EnemyController : MonoBehaviour
             //raycast stuff
             bool rayhit = false;
             RaycastHit hit;
-            float raydist = 6.0f; //arbitrary, may need to tweak this value
+            float raydist = 4.0f; //arbitrary, may need to tweak this value
             Vector3 middle = transform.position + new Vector3(0, 0.5f, 0);
-            if (Physics.Raycast(middle, transform.TransformDirection(Vector3.forward), out hit, raydist)) 
+            if (Physics.Raycast(middle, transform.TransformDirection(Vector3.forward), out hit, raydist))
             {
                 rayhit = true;
             }
@@ -72,19 +74,19 @@ public class EnemyController : MonoBehaviour
             Vector3 ol = Quaternion.Euler(0, -22.5f, 0) * transform.TransformDirection(Vector3.forward);
             Vector3 ir = Quaternion.Euler(0, 22.5f, 0) * transform.TransformDirection(Vector3.forward);
             Vector3 il = Quaternion.Euler(0, -45, 0) * transform.TransformDirection(Vector3.forward);
-            if (Physics.Raycast(middle, or, out hit, raydist)) 
+            if (Physics.Raycast(middle, or, out hit, raydist))
             {
                 rayhit = true;
             }
-            if (Physics.Raycast(middle, ol, out hit, raydist)) 
+            if (Physics.Raycast(middle, ol, out hit, raydist))
             {
                 rayhit = true;
             }
-            if (Physics.Raycast(middle, ir, out hit, raydist)) 
+            if (Physics.Raycast(middle, ir, out hit, raydist))
             {
                 rayhit = true;
             }
-            if (Physics.Raycast(middle, il, out hit, raydist)) 
+            if (Physics.Raycast(middle, il, out hit, raydist))
             {
                 rayhit = true;
             }
@@ -101,27 +103,16 @@ public class EnemyController : MonoBehaviour
                 //other states
                 if (state == 0)
                 {
-                    if (dir)
+                    if(Vector3.Distance(transform.position, wpoints[index]) < tolerance)
                     {
-                        if (Vector3.Distance(transform.position, destination) < tolerance)
+                        nm.isStopped = true;
+                        index += 1; //go to next location
+                        if(index >= wpoints.Count) //we reached all points, loop around to start
                         {
-                            nm.isStopped = true;
-                            dir = false;
-                            state = 1;
-                            curTime = 0.0f;
-                            //play waiting/turning animation
+                            index = 0;
                         }
-                    }
-                    else
-                    {
-                        if (Vector3.Distance(transform.position, origin) < tolerance)
-                        {
-                            nm.isStopped = true;
-                            dir = true;
-                            state = 1;
-                            curTime = 0.0f;
-                            //play waiting/turning animation
-                        }
+                        state = 1;
+                        curTime = 0.0f;
                     }
                 }
                 else if (state == 1)
@@ -131,14 +122,7 @@ public class EnemyController : MonoBehaviour
                     {
                         curTime = 0.0f;
                         state = 0;
-                        if (dir)
-                        {
-                            nm.SetDestination(destination);
-                        }
-                        else
-                        {
-                            nm.SetDestination(origin);
-                        }
+                        nm.SetDestination(wpoints[index]);
                         nm.isStopped = false;
                     }
                 }
@@ -146,9 +130,9 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other) 
+    void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject == agent) //check if agent has gotten too close
+        if (other.gameObject == agent) //check if agent has gotten too close
         {
             state = 2;
             curTime = 0.0f;
@@ -162,7 +146,8 @@ public class EnemyController : MonoBehaviour
         if (collision.gameObject == agent) //game over, the agent has been caught
         {
             Destroy(agent); //should replace this with some death animation or something
-        } else if(collision.gameObject.tag == "Rocky") //enemy hazard
+        }
+        else if (collision.gameObject.tag == "Rocky") //enemy hazard
         {
             nm.speed = speed - 1.5f;
         }
