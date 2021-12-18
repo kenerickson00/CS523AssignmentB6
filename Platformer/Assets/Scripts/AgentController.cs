@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class AgentController : MonoBehaviour
@@ -8,6 +9,8 @@ public class AgentController : MonoBehaviour
     public float jumpForce;
     public float mudPenalty;
     public float warnTimer;
+    public Image health;
+    public Sprite healthMissing;
 
     Rigidbody rb;
     Transform agentBody; //visual model of agent
@@ -24,7 +27,6 @@ public class AgentController : MonoBehaviour
         agentBody = transform.GetChild(0);
         rb = agentBody.gameObject.GetComponent<Rigidbody>();
         animator = agentBody.gameObject.GetComponent<Animator>();
-
         jumping = false;
         onMud = false;
         gameover = false;
@@ -189,6 +191,7 @@ public class AgentController : MonoBehaviour
     {
         rb.isKinematic = true;
         gameover = true;
+        health.sprite = healthMissing;
         animator.SetBool("Defeat", true);
     }
 
