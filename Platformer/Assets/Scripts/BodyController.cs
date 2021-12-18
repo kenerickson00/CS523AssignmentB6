@@ -47,4 +47,13 @@ public class BodyController : MonoBehaviour
         }
         par.setMud(false);
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Finish")
+        {
+            Destroy(other.gameObject);
+            par.winGame();
+        }
+    }
 }

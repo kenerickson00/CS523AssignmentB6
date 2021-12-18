@@ -111,6 +111,7 @@ public class WallEnemyController : MonoBehaviour
 
             if (rayhit)
             {
+                agent.transform.parent.gameObject.GetComponent<AgentController>().setWarning();
                 state = 2;
                 curTime = 0.0f;
                 nm.SetDestination(agent.transform.position);
@@ -165,6 +166,7 @@ public class WallEnemyController : MonoBehaviour
     {
         if (other.gameObject == agent) //check if agent has gotten too close
         {
+            agent.transform.parent.gameObject.GetComponent<AgentController>().setWarning();
             state = 2;
             curTime = 0.0f;
             nm.SetDestination(agent.transform.position);

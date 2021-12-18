@@ -7,6 +7,7 @@ public class AgentController : MonoBehaviour
     public float speed;
     public float jumpForce;
     public float mudPenalty;
+    public float warnTimer;
 
     Rigidbody rb;
     Transform agentBody; //visual model of agent
@@ -15,6 +16,8 @@ public class AgentController : MonoBehaviour
     private bool jumping;
     private bool onMud;
     private bool gameover;
+    private bool victory;
+    private float timer;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,12 +28,23 @@ public class AgentController : MonoBehaviour
         jumping = false;
         onMud = false;
         gameover = false;
+        victory = false;
+        timer = 0.0f;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!gameover)
+        if(timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
+            if(timer <= 0.0f)
+            {
+                transform.GetChild(0).GetChild(2).gameObject.SetActive(false); //close warning
+            }
+        }
+
+        if (!gameover && !victory)
         {
             float hdir = Input.GetAxis("Horizontal");
             float vdir = Input.GetAxis("Vertical");
@@ -176,5 +190,18 @@ public class AgentController : MonoBehaviour
         rb.isKinematic = true;
         gameover = true;
         animator.SetBool("Defeat", true);
+    }
+
+    public void winGame()
+    {
+        rb.isKinematic = true;
+        victory = true;
+        animator.SetBool("Victory", true);
+    }
+
+    public void setWarning()
+    {
+        transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
+        timer = warnTimer;
     }
 }

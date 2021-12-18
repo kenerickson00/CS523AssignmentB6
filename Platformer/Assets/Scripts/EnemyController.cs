@@ -114,6 +114,7 @@ public class EnemyController : MonoBehaviour
 
             if (rayhit)
             {
+                agent.transform.parent.gameObject.GetComponent<AgentController>().setWarning();
                 state = 2;
                 curTime = 0.0f;
                 nm.speed = speed + 1.5f;
@@ -189,6 +190,7 @@ public class EnemyController : MonoBehaviour
     {
         if(other.gameObject == agent) //check if agent has gotten too close
         {
+            agent.transform.parent.gameObject.GetComponent<AgentController>().setWarning();
             state = 2;
             curTime = 0.0f;
             nm.speed = speed + 1.5f;
