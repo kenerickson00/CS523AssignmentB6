@@ -10,6 +10,7 @@ public class AgentController : MonoBehaviour
     public float mudPenalty;
     public float warnTimer;
     public Image health;
+    public Image defeated;
     public Sprite healthMissing;
 
     Rigidbody rb;
@@ -193,6 +194,13 @@ public class AgentController : MonoBehaviour
         gameover = true;
         health.sprite = healthMissing;
         animator.SetBool("Defeat", true);
+        StartCoroutine(gameOver());
+    }
+
+    IEnumerator gameOver()
+    {
+        yield return new WaitForSeconds(4);
+        defeated.gameObject.SetActive(true);
     }
 
     public void winGame()
