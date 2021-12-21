@@ -18,5 +18,9 @@ public class CameraController : MonoBehaviour
     {
         transform.position += agent.position - last;
         last = agent.position;
+        float mouseX = (Input.mousePosition.x / Screen.width ) - 0.5f;
+        float mouseY = (Input.mousePosition.y / Screen.height) - 0.5f;
+        //XY values determine viewing angles
+        transform.localRotation = Quaternion.Euler (new Vector4 (-1f * (mouseY * 45f), (mouseX * 45f), transform.localRotation.z));
     }
 }
