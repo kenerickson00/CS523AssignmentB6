@@ -199,7 +199,7 @@ public class AgentController : MonoBehaviour
 
     IEnumerator gameOver()
     {
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(2);
         defeated.gameObject.SetActive(true);
     }
 
