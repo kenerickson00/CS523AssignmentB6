@@ -26,7 +26,7 @@ public class CameraController : MonoBehaviour
         alast = transform.TransformPoint(agent.position);
 
         bool leftrot = Input.GetKey(KeyCode.LeftShift);
-        bool rightrot = Input.GetKey(KeyCode.RightShift);
+        bool rightrot = Input.GetKey(KeyCode.RightShift);/**
         if(leftrot)
         {
             if(!rightrot)
@@ -36,7 +36,7 @@ public class CameraController : MonoBehaviour
         } else if(rightrot)
         {
             cam.transform.eulerAngles = new Vector3(cam.transform.eulerAngles.x, cam.transform.eulerAngles.y + rotspeed, cam.transform.eulerAngles.z);
-        }
+        }*/
         //float mouseX = (Input.mousePosition.x / Screen.width ) - 0.5f;
         //float mouseY = (Input.mousePosition.y / Screen.height) - 0.5f;
         //XY values determine viewing angles
