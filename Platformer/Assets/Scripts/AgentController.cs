@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 public class AgentController : MonoBehaviour
@@ -201,6 +202,9 @@ public class AgentController : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         defeated.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadScene("start screen");
+
     }
 
     public void winGame()
@@ -208,6 +212,7 @@ public class AgentController : MonoBehaviour
         rb.isKinematic = true;
         victory = true;
         animator.SetBool("Victory", true);
+        GetComponent<AudioSource>().Play(0);
     }
 
     public void setWarning()
