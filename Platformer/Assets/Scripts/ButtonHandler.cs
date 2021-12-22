@@ -9,7 +9,7 @@ public class ButtonHandler : MonoBehaviour
     public void startGame()
     {
         Debug.Log("Start the game");
-        SceneManager.LoadScene("Level");
+        SceneManager.LoadScene("OtherLevel topdown");
     }
 
     public void startDemo()
@@ -20,5 +20,10 @@ public class ButtonHandler : MonoBehaviour
     public void endGame()
     {
         Application.Quit();
+    }
+
+    public void mainMenu()
+    {
+        SceneManager.LoadScene("start screen");
     }
 }
