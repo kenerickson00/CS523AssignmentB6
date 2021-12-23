@@ -54,6 +54,9 @@ public class BodyController : MonoBehaviour
         {
             Destroy(other.gameObject);
             par.winGame();
+        } else if(other.gameObject.tag == "Respawn")
+        {
+            par.getHit();
         }
     }
 }

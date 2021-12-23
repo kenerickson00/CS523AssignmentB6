@@ -37,6 +37,9 @@ public class UnstableFloorController : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        start = true;
+        if (collision.gameObject.tag == "Player")
+        {
+            start = true;
+        }
     }
 }
