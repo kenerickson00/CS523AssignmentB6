@@ -48,6 +48,28 @@ public class AgentController : MonoBehaviour
         timer = 0.0f;
     }
 
+    void Update()
+    {
+        if(Input.GetKeyDown("c"))
+        {
+            crouching = !crouching;
+            if(crouching)
+                agentBody.localScale = new Vector3(1, .75f, 1);
+            else
+            {
+                agentBody.localScale = new Vector3(1, 1, 1);
+            }
+            animator.SetBool("crouching", crouching);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && !jumping)
+        {
+            rb.AddForce(new Vector3(0, jumpForce, 0));
+            jumping = true;
+            animator.SetBool("jumpUp", true);
+        }
+}
+
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -66,18 +88,6 @@ public class AgentController : MonoBehaviour
             float vdir = Input.GetAxis("Vertical");
             animator.SetFloat("hdir", hdir);
 
-            if(Input.GetKeyDown("c"))
-            {
-                crouching = !crouching;
-                if(crouching)
-                    agentBody.localScale = new Vector3(1, .75f, 1);
-                else
-                {
-                    agentBody.localScale = new Vector3(1, 1, 1);
-                }
-                animator.SetBool("crouching", crouching);
-            }
-
             if(agentBody.transform.position.y < -1)
             {
                 rb.isKinematic = true;
@@ -94,7 +104,7 @@ public class AgentController : MonoBehaviour
             }
             else
             {
-                transform.position += speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
+               transform.position += speed * Time.deltaTime * new Vector3(hdir, 0, vdir);
             }
 
             //handle rotation. Should probably do these turns with animations and not just abrupt turns, but this is more or less how we want it to work
@@ -106,12 +116,13 @@ public class AgentController : MonoBehaviour
                 }
                 else if (hdir < 0) //NW
                 {
-                    agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -45, agentBody.eulerAngles.z);
+                   agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, -45, agentBody.eulerAngles.z);
                 }
                 else //hdir == 0 N
                 {
                     agentBody.eulerAngles = new Vector3(agentBody.eulerAngles.x, 0, agentBody.eulerAngles.z);
                 }
+
                 animator.SetBool("moving", true);
             }
             else if (vdir < 0) //backwards
@@ -148,12 +159,6 @@ public class AgentController : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Space) && !jumping)
-            {
-                rb.AddForce(new Vector3(0, jumpForce, 0));
-                jumping = true;
-                animator.SetBool("jumpUp", true);
-            }
             /* Some brief thoughts about how movement should work
              * For non jumping movement, ie moving forward, backwards, and sideways, we should do it using transforms
              *  because this will keep movement quick and responsive, we don't want to be waiting to accelerate for a long 
