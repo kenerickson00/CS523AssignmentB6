@@ -20,6 +20,7 @@ public class AgentController : MonoBehaviour
     Transform agentBody; //visual model of agent
     Animator animator;
 
+    private bool crouching;
     private bool jumping;
     private bool onMud;
     private bool gameover;
@@ -35,6 +36,7 @@ public class AgentController : MonoBehaviour
         onMud = false;
         gameover = false;
         victory = false;
+        crouching = false;
         timer = 0.0f;
     }
 
@@ -54,6 +56,19 @@ public class AgentController : MonoBehaviour
         {
             float hdir = Input.GetAxis("Horizontal");
             float vdir = Input.GetAxis("Vertical");
+            animator.SetFloat("hdir", hdir);
+
+            if(Input.GetKeyDown("c"))
+            {
+                crouching = !crouching;
+                if(crouching)
+                    agentBody.localScale = new Vector3(1, .75f, 1);
+                else
+                {
+                    agentBody.localScale = new Vector3(1, 1, 1);
+                }
+                animator.SetBool("crouching", crouching);
+            }
 
             if(agentBody.transform.position.y < -1)
             {
@@ -171,6 +186,14 @@ public class AgentController : MonoBehaviour
             }
         }
     }*/
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Laser")
+        {
+            getHit();
+        }
+    }
 
     public void setJumpUp(bool b)
     {

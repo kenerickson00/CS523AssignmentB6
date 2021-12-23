@@ -68,7 +68,8 @@ public class WallEnemyController : MonoBehaviour
             bool rayhit = false;
             RaycastHit hit;
             float raydist = 4.0f; //arbitrary, may need to tweak this value
-            Vector3 middle = transform.position + new Vector3(0, 0.5f, 0);
+            Vector3 middle = transform.position + new Vector3(0, 1.5f, 0);
+            // Debug.DrawRay(middle, transform.TransformDirection(Vector3.forward * raydist), Color.green);
             if (Physics.Raycast(middle, transform.TransformDirection(Vector3.forward), out hit, raydist))
             {
                 if (hit.collider.gameObject == agent)
