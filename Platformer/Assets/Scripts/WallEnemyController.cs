@@ -8,6 +8,7 @@ public class WallEnemyController : MonoBehaviour
     public float waitTime;
     public float switchTime;
     public float speed;
+    public float raydist;
     public GameObject agent; //agent model
 
     UnityEngine.AI.NavMeshAgent nm;
@@ -29,6 +30,8 @@ public class WallEnemyController : MonoBehaviour
         index = 1; //already at index 0
         state = 0;
         curTime = 0.0f;
+        if(raydist == 0)
+            raydist = 4.0f;
 
         nm.speed = speed;
         nm.SetDestination(waypoints.GetChild(index).position);
@@ -64,12 +67,19 @@ public class WallEnemyController : MonoBehaviour
         }
         else
         {
+            
             //raycast stuff
             bool rayhit = false;
-            RaycastHit hit;
-            float raydist = 4.0f; //arbitrary, may need to tweak this value
-            Vector3 middle = transform.position + new Vector3(0, 1.5f, 0);
+            
+            //RaycastHit hit;
+           // float raydist = 4.0f; //arbitrary, may need to tweak this value
+            Vector3 middle = transform.position + new Vector3(0, 0.5f, 0);
+            Vector3 high = transform.position + new Vector3(0, 1.5f, 0);
+            rayhit = CheckRaycast(middle);
+            if(!rayhit)
+                rayhit = CheckRaycast(high);
             // Debug.DrawRay(middle, transform.TransformDirection(Vector3.forward * raydist), Color.green);
+            /**
             if (Physics.Raycast(middle, transform.TransformDirection(Vector3.forward), out hit, raydist))
             {
                 if (hit.collider.gameObject == agent)
@@ -109,6 +119,7 @@ public class WallEnemyController : MonoBehaviour
                     rayhit = true;
                 }
             }
+            */
 
             if (rayhit)
             {
@@ -161,6 +172,42 @@ public class WallEnemyController : MonoBehaviour
         /*float curspeed = (transform.position - last).magnitude / Time.deltaTime;
         animator.SetFloat("speed", curspeed);*/
         last = transform.position;
+    }
+
+    bool CheckRaycast(Vector3 rayToCast)
+    {
+            RaycastHit hit;
+            //Debug.DrawRay(rayToCast, transform.TransformDirection(Vector3.forward * raydist), Color.green);
+            if (Physics.Raycast(rayToCast, transform.TransformDirection(Vector3.forward), out hit, raydist))
+            {
+                if (hit.collider.gameObject == agent)
+                    return true;
+            }
+            Vector3 or = Quaternion.Euler(0, 45, 0) * transform.TransformDirection(Vector3.forward);
+            Vector3 ol = Quaternion.Euler(0, -22.5f, 0) * transform.TransformDirection(Vector3.forward);
+            Vector3 ir = Quaternion.Euler(0, 22.5f, 0) * transform.TransformDirection(Vector3.forward);
+            Vector3 il = Quaternion.Euler(0, -45, 0) * transform.TransformDirection(Vector3.forward);
+            if (Physics.Raycast(rayToCast, or, out hit, raydist))
+            {
+                if (hit.collider.gameObject == agent)
+                    return true;
+            }
+            if (Physics.Raycast(rayToCast, ol, out hit, raydist))
+            {
+                if (hit.collider.gameObject == agent)
+                    return true;
+            }
+            if (Physics.Raycast(rayToCast, ir, out hit, raydist))
+            {
+                if (hit.collider.gameObject == agent)
+                    return true;
+            }
+            if (Physics.Raycast(rayToCast, il, out hit, raydist))
+            {
+                if (hit.collider.gameObject == agent)
+                    return true;
+            }
+        return false;
     }
 
     void OnTriggerEnter(Collider other)
