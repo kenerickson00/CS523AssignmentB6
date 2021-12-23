@@ -20,6 +20,8 @@ public class AgentController : MonoBehaviour
     Transform agentBody; //visual model of agent
     Animator animator;
 
+    private GameObject nextLevelButton;
+    private GameObject sameLevelButton;
     private bool crouching;
     private bool jumping;
     private bool onMud;
@@ -37,6 +39,12 @@ public class AgentController : MonoBehaviour
         gameover = false;
         victory = false;
         crouching = false;
+        nextLevelButton = GameObject.FindGameObjectWithTag("Next Level");
+        sameLevelButton = GameObject.FindGameObjectWithTag("Same Level");
+        if(nextLevelButton != null)
+            nextLevelButton.SetActive(false);
+        if(sameLevelButton != null)
+            sameLevelButton.SetActive(false);
         timer = 0.0f;
     }
 
@@ -238,6 +246,7 @@ public class AgentController : MonoBehaviour
         yield return new WaitForSeconds(2);
         defeated.gameObject.SetActive(true);
         yield return new WaitForSeconds(2);
+        sameLevelButton.SetActive(true);
         postgameButton.gameObject.SetActive(true);
 
     }
@@ -250,6 +259,8 @@ public class AgentController : MonoBehaviour
         goalReached.gameObject.SetActive(true);
         GetComponent<AudioSource>().Play(0);
         postgameButton.gameObject.SetActive(true);
+        if(nextLevelButton != null)
+            nextLevelButton.SetActive(true);
     }
 
     public void setWarning()

@@ -8,8 +8,17 @@ public class ButtonHandler : MonoBehaviour
 {
     public void startGame()
     {
-        Debug.Log("Start the game");
         SceneManager.LoadScene("OtherLevel topdown");
+    }
+
+    public void levelTwo()
+    {
+        SceneManager.LoadScene("Level2");
+    }
+
+    public void levelThree()
+    {
+        SceneManager.LoadScene("Level 3");
     }
 
     public void startDemo()

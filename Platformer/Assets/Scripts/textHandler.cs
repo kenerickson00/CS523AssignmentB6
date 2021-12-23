@@ -23,7 +23,9 @@ public class textHandler : MonoBehaviour
     {
         string buttonClicked = GetComponent<TextMesh>().text;
         if(buttonClicked == "Start Game")
+        {
             SceneManager.LoadScene("Level2"); //SceneManager.LoadScene("OtherLevel topdown");
+        }
         else if(buttonClicked == "Demo Area")
             SceneManager.LoadScene("testscene");
         else
