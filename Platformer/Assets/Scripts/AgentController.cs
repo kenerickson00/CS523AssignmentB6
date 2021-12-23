@@ -38,10 +38,10 @@ public class AgentController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(timer > 0.0f)
+        if (timer > 0.0f)
         {
             timer -= Time.deltaTime;
-            if(timer <= 0.0f)
+            if (timer <= 0.0f)
             {
                 transform.GetChild(0).GetChild(2).gameObject.SetActive(false); //close warning
             }
